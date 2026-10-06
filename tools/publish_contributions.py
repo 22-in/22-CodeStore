@@ -14,6 +14,8 @@ import tempfile
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
+import os
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRIBUTIONS = ROOT / "contributions"
@@ -58,6 +60,18 @@ SOFTWARE.
 """
 
 
+def next_version(current: str | None, requested: str | None) -> str:
+    if requested:
+        return requested
+    if not current:
+        return "1.0.0"
+    match = re.match(r"^(\d+)\.(\d+)\.(\d+)$", current)
+    if not match:
+        raise ValueError(f"Cannot auto-bump non-standard version: {current}")
+    major, minor, patch = map(int, match.groups())
+    return f"{major}.{minor}.{patch + 1}"
+
+
 def build_archive(contribution: Path, manifest: dict, destination: Path):
     author = manifest["author"]["name"]
     license_name = str(manifest["license"]).strip()
@@ -79,7 +93,7 @@ def build_archive(contribution: Path, manifest: dict, destination: Path):
             "language": manifest["language"],
             "package_version": manifest["version"],
             "author": author,
-            "author_username": manifest["author"].get("username"),
+            "author_username": manifest["author"].get("username") or os.getenv("GITHUB_ACTOR"),
             "license": license_name,
             "description": manifest["description"],
             "dependencies": manifest.get("dependencies", []),
@@ -132,10 +146,14 @@ def main():
         if current_path:
             current = load(ROOT / current_path)
             current_version = current["version"]
-            if manifest["version"] == current_version:
-                print(f"Skipping unchanged package: {package_id} {current_version}")
-                continue
 
+        version = next_version(current_version, manifest.get("version"))
+        if current_version == version:
+            print(f"Skipping unchanged package: {package_id} {current_version}")
+            continue
+
+        manifest = dict(manifest)
+        manifest["version"] = version
         author = manifest["author"]["name"]
         archive_path = (
             ROOT / ("libraries" if manifest["type"] == "library" else "scripts")
@@ -166,8 +184,8 @@ def main():
                 "description": manifest["description"],
             },
         }
-        if manifest["author"].get("username"):
-            metadata["author_username"] = manifest["author"]["username"]
+        if manifest["author"].get("username") or os.getenv("GITHUB_ACTOR"):
+            metadata["author_username"] = manifest["author"].get("username") or os.getenv("GITHUB_ACTOR")
         if manifest.get("aliases"):
             metadata["aliases"] = manifest["aliases"]
 
