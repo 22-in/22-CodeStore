@@ -35,6 +35,24 @@ def load(path: Path):
         raise ValueError(f"{path}: invalid JSON: {exc}") from exc
 
 
+def validate_dependencies(path: Path, dependencies, errors):
+    if not isinstance(dependencies, list):
+        errors.append(f"{path}: dependencies must be a list")
+        return
+
+    for index, dependency in enumerate(dependencies):
+        prefix = f"{path}: dependencies[{index}]"
+        if not isinstance(dependency, dict):
+            errors.append(f"{prefix}: dependency must be an object with id and version")
+            continue
+        dependency_id = dependency.get("id")
+        version_constraint = dependency.get("version")
+        if not isinstance(dependency_id, str) or not dependency_id.strip():
+            errors.append(f"{prefix}: id must be a non-empty string")
+        if not isinstance(version_constraint, str) or not version_constraint.strip():
+            errors.append(f"{prefix}: version must be a non-empty version constraint string")
+
+
 def validate_manifest(path: Path, errors, registry_ids, aliases):
     data = load(path)
     missing = MANIFEST_REQUIRED - data.keys()
@@ -48,8 +66,7 @@ def validate_manifest(path: Path, errors, registry_ids, aliases):
         errors.append(f"{path}: unsupported language: {data['language']}")
     if "version" in data and not VERSION_RE.match(str(data["version"])):
         errors.append(f"{path}: version must use a numeric semver-like form such as 1.0.0")
-    if not isinstance(data["dependencies"], list):
-        errors.append(f"{path}: dependencies must be a list")
+    validate_dependencies(path, data["dependencies"], errors)
     if not isinstance(data["architectures"], list) or not data["architectures"]:
         errors.append(f"{path}: architectures must be a non-empty list")
     elif any(a not in ARCHITECTURES for a in data["architectures"]):
@@ -133,12 +150,12 @@ def main():
             errors.append(f"{path}: invalid architecture")
         source = ROOT / data["source"]
         if not source.exists():
-            errors.append(f"{path}: source does not exist: {data['source']}")
+            errors.append(f"{path}: source does not exist: {data["source"]}")
         distribution = data["distribution"]
         if "path" not in distribution:
             errors.append(f"{path}: distribution.path is required")
         elif not (ROOT / distribution["path"]).exists():
-            errors.append(f"{path}: distribution.path does not exist: {distribution['path']}")
+            errors.append(f"{path}: distribution.path does not exist: {distribution["path"]}")
 
     for manifest in sorted(CONTRIBUTIONS.glob("*/22-manifest.json")):
         validate_manifest(manifest, errors, registry_ids, aliases)
