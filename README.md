@@ -57,6 +57,22 @@ Example:
 
 QuickCode resolves the requested package through the Store registry and selects the appropriate distribution.
 
+### Install an Exact Version
+
+A specific version can be requested when reproducibility matters:
+
+```bash
+22 install <name>@<version>
+```
+
+Example:
+
+```bash
+22 install google_generativeai@1.0.0
+```
+
+When an exact version is requested, the client must install that version or fail rather than silently selecting another version.
+
 ### Get a Script
 
 Inside QuickCode:
@@ -118,6 +134,8 @@ package metadata
       ↓
 select compatible distribution
       ↓
+verify integrity
+      ↓
 download / install
 ```
 
@@ -125,15 +143,28 @@ The registry describes:
 
 - stable package ID
 - human-facing name
-- version
+- version and version history
 - type and language
 - release/status
 - license and attribution
 - dependencies
 - supported architectures
 - distribution files
+- SHA-256 checksums for published artifacts
 
 See `docs/INTEGRATION.md` for the integration contract.
+
+---
+
+## 🔐 Package Integrity & Versions
+
+Published artifacts use **SHA-256 checksums** so a client can verify that the downloaded file matches the artifact published by the Store.
+
+Clients should verify the checksum **before extracting or installing** an artifact. A checksum mismatch should stop the installation.
+
+Packages use versioned artifacts, allowing clients to request an exact version instead of depending only on the latest release.
+
+SHA-256 verifies artifact integrity, but does not by itself prove who published the artifact. Stronger publisher-signing mechanisms may be added in the future.
 
 ---
 
