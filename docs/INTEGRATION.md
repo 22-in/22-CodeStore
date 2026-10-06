@@ -112,11 +112,20 @@ This keeps the UI/terminal layer independent from source-code formatting.
 
 ## 9. Dependencies
 
-Dependencies are metadata, not source headers.
+Dependencies are declared in the manifest as package ID + version constraint objects:
 
-A client can inspect the dependency list before installation and decide whether to resolve, warn about, or install those dependencies.
+```json
+"dependencies": [
+  {
+    "id": "requests",
+    "version": ">=2.30.0"
+  }
+]
+```
 
-Dependency conflict resolution is a client/package-manager concern and is not yet defined by the Store contract.
+The `id` must refer to a 22 Store package ID. A dependency version is a constraint, so clients may support exact versions or ranges according to their package-manager implementation.
+
+The Store validates the dependency declaration format but does not currently resolve dependencies or handle conflicts. Clients/package managers are responsible for selecting compatible versions and deciding how to handle conflicts.
 
 ## 10. Compatibility
 

@@ -14,6 +14,8 @@
   "architecture_values": ["any", "source", "armv7", "arm64", "x86", "x86_64"],
   "optional_package_fields": ["aliases", "author_username", "versions"],
   "distribution_security_fields": ["checksums"],
+  "dependency_fields": ["id", "version"],
+  "dependency_rule": "Dependencies are declared as objects containing a 22 Store package ID and a non-empty version constraint. Version constraints are interpreted by the client/package manager; the Store does not currently resolve dependency conflicts.",
   "rules": [
     "Binary/native resources use architecture-specific artifacts; pure-source or architecture-independent packages may use any/source.",
     "A package ID is the stable machine-readable identifier used by registry clients.",
@@ -27,6 +29,7 @@
     "Contributor manifests are intake metadata; published registry metadata is generated or maintained by 22.",
     "The published author field preserves the original author name; an optional author_username can preserve the submitting account identity.",
     "Generated publication artifacts must preserve applicable third-party license and attribution files.",
+    "Dependencies are metadata objects with an id and version constraint; dependency resolution and conflict handling are client/package-manager responsibilities.",
     "SHA-256 checksums protect downloaded artifacts against accidental corruption or unexpected content changes; signature-based trust can be added later."
   ]
 }

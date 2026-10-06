@@ -31,7 +31,12 @@ Example:
   },
   "description": "A short description.",
   "aliases": ["my-lib"],
-  "dependencies": [],
+  "dependencies": [
+    {
+      "id": "requests",
+      "version": ">=2.30.0"
+    }
+  ],
   "architectures": ["any"]
 }
 ```
@@ -47,8 +52,10 @@ Example:
 - `author`: original author name. `username` is optional; the publishing workflow can preserve the GitHub account that submitted the contribution.
 - `description`: short explanation of what the resource does.
 - `aliases`: optional alternate names. They must not conflict with an existing package or alias.
-- `dependencies`: optional dependency declarations. Keep them in metadata rather than source headers.
+- `dependencies`: optional list of dependency objects. Each dependency must contain a package `id` and a `version` constraint, such as `>=2.30.0`, `^1.4.0`, or `1.2.3`. Dependency IDs refer to 22 Store package IDs, not display names or aliases.
 - `architectures`: use `any` for architecture-independent resources, `source` for source-only distribution where appropriate, and actual architecture values for native/compiled resources. For native resources, add `architecture_artifacts` mapping each architecture to the contributor-supplied binary/artifact.
+
+The Store defines dependency declarations, but does not currently perform dependency resolution or conflict resolution. Clients/package managers are responsible for resolving the declared constraints.
 
 ## Library requirements
 
