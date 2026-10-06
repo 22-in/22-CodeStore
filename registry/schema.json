@@ -9,6 +9,7 @@
   ],
   "types": ["library", "script"],
   "languages": ["python", "java", "cpp", "web"],
+  "contribution_manifest_optional_fields": ["version", "aliases", "release", "architecture_artifacts"],
   "releases": ["stable", "beta", "experimental", "deprecated"],
   "architecture_values": ["any", "source", "armv7", "arm64", "x86", "x86_64"],
   "rules": [
