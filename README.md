@@ -10,13 +10,11 @@ It is built to make code easier to **find, download, reuse, and share** across d
 
 ## 📦 What's in 22 Store?
 
-22 Store has two main resource types:
-
 ### Libraries
 
 Reusable packages or modules that can be added to a project and used by other code.
 
-Libraries are suitable for things such as:
+Libraries are suitable for:
 
 - APIs and SDKs
 - utilities and helper modules
@@ -24,11 +22,13 @@ Libraries are suitable for things such as:
 - reusable application logic
 - language-specific packages
 
+A published library includes documentation explaining installation, usage, and examples.
+
 ### Scripts
 
 Ready-to-use programs or tools that can be downloaded and used directly.
 
-Scripts are suitable for things such as:
+Scripts are suitable for:
 
 - utilities
 - automation tools
@@ -55,7 +55,7 @@ Example:
 22 install google_generativeai
 ```
 
-This command tells QuickCode to find the requested library in the 22 Store registry and install the appropriate package.
+QuickCode resolves the requested package through the Store registry and selects the appropriate distribution.
 
 ### Get a Script
 
@@ -71,7 +71,7 @@ Example:
 22 get calculator
 ```
 
-The requested script is downloaded from the Store and placed into the currently active project folder in QuickCode.
+QuickCode downloads the requested script resource into the active project according to the package metadata.
 
 > **Important:** `22 install` and `22 get` are QuickCode commands. They are not commands provided by GitHub or by this repository itself.
 >
@@ -101,40 +101,39 @@ scripts/
 
 Additional languages can be added as the Store grows.
 
-The language of a resource does not determine how another application has to access it. Developers are free to integrate Store resources into their own tools in the way that fits their project.
-
 ---
 
 ## 🧭 How the Store Works
 
-The repository contains both the actual resources and a registry that describes them.
+The repository contains the resources and a machine-readable registry.
 
 ```text
-Developer
-   │
-   ├── finds a resource
-   │
-   ├── reads its metadata
-   │
-   └── downloads the appropriate file
-   │
-   ▼
-22 Store
+Developer / App
+      ↓
+registry/index.json
+      ↓
+resolve package ID or alias
+      ↓
+package metadata
+      ↓
+select compatible distribution
+      ↓
+download / install
 ```
 
-The registry provides machine-readable information such as:
+The registry describes:
 
-- package ID
-- name
-- type
-- language
+- stable package ID
+- human-facing name
 - version
-- release status
+- type and language
+- release/status
+- license and attribution
+- dependencies
 - supported architectures
-- source
-- available distribution files
+- distribution files
 
-Applications can use this information to discover and download resources without relying on hardcoded package URLs.
+See `docs/INTEGRATION.md` for the integration contract.
 
 ---
 
@@ -160,7 +159,7 @@ Example:
 "architectures": ["armv7", "arm64"]
 ```
 
-A package is **not** automatically `any` just because its primary language is Python. If it contains native components, those components determine the required architecture support.
+A package is **not** automatically `any` just because its primary language is Python. Native components determine the required architecture support.
 
 Current architecture identifiers include:
 
@@ -175,57 +174,49 @@ Current architecture identifiers include:
 
 ## 🔎 Finding Resources
 
-Each resource has metadata in the registry.
-
 The registry is organized as:
 
 ```text
 registry/
 ├── index.json
+├── aliases.json
 ├── schema.json
 └── packages/
     ├── <package-id>.json
     └── ...
 ```
 
-The index connects a resource's stable ID to its metadata.
+A package ID is the stable identity of a resource. A package's version belongs to that ID; a different package has its own independent version history.
 
-Package metadata can describe the resource, its version, license, author, maintainer, supported architectures, and distribution files.
+Aliases provide alternate names but must resolve to exactly one package ID.
 
 ---
 
 ## 🤝 Contributing
 
-Want to add something to 22 Store?
-
-The basic contribution flow is:
+New resources enter through the `contributions/` directory rather than being placed directly into the published Store directories.
 
 ```text
-Create / prepare resource
-        ↓
-Choose Library or Script
-        ↓
-Choose the correct language
-        ↓
-Add accurate metadata
-        ↓
-Submit contribution
-        ↓
-Review
-        ↓
-Publication
+Prepare resource
+      ↓
+22-manifest.json
+      ↓
+Pull request
+      ↓
+Automated validation
+      ↓
+Human + security + license review
+      ↓
+Merge
+      ↓
+Trusted publication workflow
+      ↓
+Archive + metadata + registry
 ```
 
-Before submitting, make sure your contribution:
+See `CONTRIBUTING.md` for the exact contributor requirements.
 
-- works as described
-- is placed in the correct resource and language directory
-- has accurate metadata
-- respects its original license and copyright
-- does not contain malicious or unauthorized code
-- is safe for others to use
-
-If a contribution is later modified or maintained by 22, the original author and 22's maintainer role should both remain properly attributed.
+The contributor supplies the resource and basic metadata. **22 generates/maintains the published registry metadata**, so contributors do not have to manually maintain the backend registry.
 
 ---
 
@@ -233,19 +224,20 @@ If a contribution is later modified or maintained by 22, the original author and
 
 Contributions are reviewed before publication.
 
-The review process may include:
+The process may include:
 
-1. Automated validation
-2. Malware and security checks
-3. Manual review
-4. Metadata and license verification
-5. Publication after approval
+1. Automated structure and metadata validation
+2. Static/basic language validation where safe
+3. Malware and security checks
+4. Manual functionality testing
+5. License and attribution verification
+6. Publication after approval
 
-Automated security checks are signals for review; human review remains important.
+Submitted code is not automatically imported or executed during the untrusted pull-request validation workflow.
 
-If a resource is found to be malicious or unsafe, the affected resource can be quarantined or unpublished so that unrelated resources remain available.
+Small, obvious bugs may be fixed during review when practical. Major unresolved functionality or dependency problems can be rejected with a reason and resubmitted later.
 
-Repeated malicious submissions may result in contributor restrictions or a permanent ban.
+Malicious or unsafe resources can be quarantined or unpublished without removing unrelated resources.
 
 ---
 
@@ -254,6 +246,8 @@ Repeated malicious submissions may result in contributor restrictions or a perma
 The 22 Store repository is licensed under the **MIT License**.
 
 For individual resources, contributors must have the right to submit the code under the license declared for that resource.
+
+If a contributor chooses MIT for their own eligible code, the publication workflow can generate the standard MIT `LICENSE` file when one is not already present.
 
 Third-party code must retain its applicable copyright notices, attribution, and license requirements.
 
@@ -265,27 +259,19 @@ Hosting code in 22 Store does not automatically change its original license.
 
 ```text
 22-Store/
+├── contributions/
 ├── libraries/
-│   ├── python/
-│   ├── java/
-│   ├── cpp/
-│   └── web/
-│
 ├── scripts/
-│   ├── python/
-│   ├── java/
-│   ├── cpp/
-│   └── web/
-│
 ├── registry/
-│   ├── index.json
-│   ├── schema.json
-│   └── packages/
-│
+├── tools/
+├── .github/workflows/
 ├── libs.json
 ├── LICENSE
+├── CONTRIBUTING.md
 └── README.md
 ```
+
+`libs.json` is retained for compatibility with older QuickCode integrations. New integrations should use the registry.
 
 ---
 
@@ -294,11 +280,11 @@ Hosting code in 22 Store does not automatically change its original license.
 Whether you are:
 
 - **Exploring** the Store
-- **Downloading** a resource for your project
+- **Downloading** a resource
 - **Integrating** the registry into your own application
 - **Contributing** a library or script
 
-22 Store is designed to keep the process simple and understandable.
+22 Store is designed to keep the process simple and machine-readable.
 
 ---
 
