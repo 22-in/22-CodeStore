@@ -6,7 +6,7 @@ This is the stable machine-readable flow for applications such as QuickCode.
 
 Fetch `registry/index.json`.
 
-The `packages` object maps a stable package ID to its metadata file.
+The `packages` object maps a stable package ID to its package metadata file.
 
 ## 2. Resolve a package
 
@@ -19,7 +19,25 @@ A client may receive a package ID or an alias.
 
 Do not hardcode individual package download URLs.
 
-## 3. Read metadata
+## 3. Select a version
+
+Package requests should support:
+
+```text
+22 install <package>
+22 install <package>@<version>
+```
+
+These are example client commands; they are not Store or GitHub commands.
+
+- Without `@version`, a client may install the package's current version.
+- With `@version`, the client must resolve that exact version from the package metadata's `versions` map.
+- If the requested version is unavailable, installation must fail rather than silently installing another version.
+- Versioned artifacts are retained so an installed project can reproduce the same package version later.
+
+A future lockfile can additionally pin exact versions and checksums for an entire project.
+
+## 4. Read metadata
 
 Important fields include:
 
@@ -34,10 +52,11 @@ Important fields include:
 - `architectures`
 - `source`
 - `distribution`
+- `versions` when exact historical versions are needed
 
 Optional metadata may include aliases, dependencies, description, and author username.
 
-## 4. Select a distribution
+## 5. Select a distribution
 
 For architecture-independent resources:
 
@@ -53,13 +72,29 @@ For source resources:
 
 Native resources may expose architecture-specific entries such as `armv7`, `arm64`, `x86`, or `x86_64`.
 
-## 5. Download and install
+## 6. Verify before install
 
-Download the selected `distribution.path` or architecture-specific distribution entry.
+The selected distribution may provide:
 
-A client should verify a trusted checksum or signature when the registry provides one. Checksum/signature support can be added later without changing package identity.
+```json
+"checksums": {
+  "sha256": "..."
+}
+```
 
-## 6. Show attribution
+A client should calculate SHA-256 after download and compare it with the registry value **before extracting or installing the artifact**.
+
+A checksum mismatch must stop installation.
+
+Checksums protect integrity. They do not by themselves prove that the publisher is trustworthy; signature-based verification can be added later.
+
+## 7. Download and install
+
+Only install the verified selected distribution.
+
+Clients should cache downloaded artifacts by package ID and exact version where practical.
+
+## 8. Show attribution
 
 Published archives contain `22-METADATA.json`, generated from the contributor manifest.
 
@@ -75,13 +110,15 @@ Source: 22 Store
 
 This keeps the UI/terminal layer independent from source-code formatting.
 
-## 7. Dependencies
+## 9. Dependencies
 
 Dependencies are metadata, not source headers.
 
 A client can inspect the dependency list before installation and decide whether to resolve, warn about, or install those dependencies.
 
-## 8. Compatibility
+Dependency conflict resolution is a client/package-manager concern and is not yet defined by the Store contract.
+
+## 10. Compatibility
 
 The registry is the discovery layer. The client decides how to present, download, cache, install, and update resources.
 
