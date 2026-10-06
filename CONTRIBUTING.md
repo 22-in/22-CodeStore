@@ -13,11 +13,9 @@
 7. 22 reviews the contribution, including security, licensing, and functionality.
 8. Approved contributions are published into the Store registry.
 
-Contributors should submit the resource itself and its basic metadata. Do not manually edit the generated registry files unless a maintainer specifically asks you to.
+Contributors submit the resource and basic metadata. Do not manually edit generated registry files.
 
 ## Manifest
-
-Each contribution uses `22-manifest.json`.
 
 Example:
 
@@ -27,11 +25,9 @@ Example:
   "name": "My Library",
   "type": "library",
   "language": "python",
-  "version": "1.0.0",
   "license": "MIT",
   "author": {
-    "name": "Your Name",
-    "username": "your-github-username"
+    "name": "Your Name"
   },
   "description": "A short description.",
   "aliases": ["my-lib"],
@@ -46,22 +42,22 @@ Example:
 - `name`: human-facing resource name.
 - `type`: `library` or `script`.
 - `language`: supported language such as `python`, `java`, `cpp`, or `web`.
-- `version`: version of this package. A new package normally starts at `1.0.0`; later releases update the version of the same package.
-- `license`: the license the contributor has the right to grant for their submitted code. Do not claim MIT for code you do not own or have permission to relicense.
-- `author`: the original author identity. The GitHub username identifies the submitting account; it does not by itself determine legal copyright ownership.
+- `version`: optional. A new package defaults to `1.0.0`. An update without an explicit version receives a patch bump. Contributors can explicitly choose a higher version when a minor/major release is appropriate.
+- `license`: the license the contributor has the right to grant. Use `NO-LICENSE` when no license is granted; this does not mean the code is free to use.
+- `author`: original author name. `username` is optional; the publishing workflow can preserve the GitHub account that submitted the contribution.
 - `description`: short explanation of what the resource does.
 - `aliases`: optional alternate names. They must not conflict with an existing package or alias.
-- `dependencies`: optional dependency declarations. Keep them in metadata rather than inserting them into source headers.
-- `architectures`: use `any` for architecture-independent source where appropriate; use `source` for source distributions when that is the correct representation; native/compiled resources must declare their actual supported architectures.
+- `dependencies`: optional dependency declarations. Keep them in metadata rather than source headers.
+- `architectures`: use `any` for architecture-independent resources, `source` for source-only distribution where appropriate, and actual architecture values for native/compiled resources.
 
 ## Library requirements
 
 A library must include:
 
-- the library/package files
+- library/package files
 - `README.md` with installation, usage, and at least one working example
 - `22-manifest.json`
-- its declared license information
+- declared license information
 - third-party copyright/license notices where applicable
 - dependency information when applicable
 
@@ -71,11 +67,11 @@ Complex libraries should include automated tests.
 
 A script must include:
 
-- the runnable/source files
+- runnable/source files
 - `22-manifest.json`
 - enough documentation to explain how to run it and what it does
 - dependency information when applicable
-- its declared license information
+- declared license information
 
 A source header may contain concise attribution, but 22 Store will not rewrite source code merely to add metadata. Source changes are only made when an actual fix or approved modification is required.
 
@@ -89,7 +85,7 @@ If 22 fixes or modifies a contribution, the published metadata may record both t
 
 ## Review and rejection
 
-Automated checks are not final approval. A maintainer reviews the resource for functionality, security, licensing, documentation, and compatibility.
+Automated checks are not final approval. A maintainer reviews functionality, security, licensing, documentation, and compatibility.
 
 Small, obvious fixes may be made during review when practical. Contributions with major errors, unresolved dependency problems, broken functionality, or unclear licensing may be rejected with a reason and can be resubmitted after correction.
 
