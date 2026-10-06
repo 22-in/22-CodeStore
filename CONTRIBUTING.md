@@ -48,7 +48,7 @@ Example:
 - `description`: short explanation of what the resource does.
 - `aliases`: optional alternate names. They must not conflict with an existing package or alias.
 - `dependencies`: optional dependency declarations. Keep them in metadata rather than source headers.
-- `architectures`: use `any` for architecture-independent resources, `source` for source-only distribution where appropriate, and actual architecture values for native/compiled resources.
+- `architectures`: use `any` for architecture-independent resources, `source` for source-only distribution where appropriate, and actual architecture values for native/compiled resources. For native resources, add `architecture_artifacts` mapping each architecture to the contributor-supplied binary/artifact.
 
 ## Library requirements
 
