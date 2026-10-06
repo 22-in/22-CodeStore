@@ -1,40 +1,25 @@
 {
-  "registry_version": "1.0",
-  "index_required_fields": [
-    "registry_version",
-    "packages"
-  ],
+  "registry_version": "1.1",
+  "index_required_fields": ["registry_version", "packages"],
   "package_entry_rule": "Each packages entry maps a stable package ID to its package metadata path.",
   "package_required_fields": [
-    "id",
-    "name",
-    "type",
-    "language",
-    "version",
-    "release",
-    "status",
-    "license",
-    "author",
-    "maintainer",
-    "published",
-    "architectures",
-    "source",
-    "distribution"
+    "id", "name", "type", "language", "version", "release", "status",
+    "license", "author", "maintainer", "published", "architectures",
+    "source", "distribution"
   ],
   "types": ["library", "script"],
+  "languages": ["python", "java", "cpp", "web"],
   "releases": ["stable", "beta", "experimental", "deprecated"],
-  "architecture_values": [
-    "any",
-    "source",
-    "armv7",
-    "arm64",
-    "x86",
-    "x86_64"
-  ],
+  "architecture_values": ["any", "source", "armv7", "arm64", "x86", "x86_64"],
   "rules": [
-    "Binary/native libraries use architecture-specific artifacts; pure-source or architecture-independent packages may use any/source.",
+    "Binary/native resources use architecture-specific artifacts; pure-source or architecture-independent packages may use any/source.",
     "A package ID is the stable machine-readable identifier used by registry clients.",
     "Package names are human-facing and may differ from package IDs.",
-    "Clients should resolve package metadata through registry/index.json instead of hardcoding artifact URLs."
+    "Clients should resolve package metadata through registry/index.json instead of hardcoding artifact URLs.",
+    "A package version belongs to one stable package ID; different package IDs have independent version histories.",
+    "Aliases must resolve to exactly one package ID and must not collide with package IDs or other aliases.",
+    "Contributor manifests are intake metadata; published registry metadata is generated or maintained by 22.",
+    "The published author field preserves the original author name; an optional author_username can preserve the submitting account identity.",
+    "Generated publication artifacts must preserve applicable third-party license and attribution files."
   ]
 }
