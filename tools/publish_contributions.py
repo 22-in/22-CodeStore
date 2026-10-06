@@ -7,6 +7,7 @@ It does not execute submitted resource code.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import sys
@@ -58,6 +59,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def next_version(current: str | None, requested: str | None) -> str:
@@ -164,7 +173,7 @@ def main():
         manifest["version"] = version
         author = manifest["author"]["name"]
         base_dir = ROOT / ("libraries" if manifest["type"] == "library" else "scripts") / manifest["language"]
-        archive_path = base_dir / f"{package_id}.zip"
+        archive_path = base_dir / f"{package_id}-{version}.zip"
         build_archive(manifest_path.parent, manifest, archive_path)
 
         distribution_architectures = {}
@@ -172,7 +181,7 @@ def main():
             if arch in {"any", "source"}:
                 distribution_architectures[arch] = str(archive_path.relative_to(ROOT))
                 continue
-            arch_archive = base_dir / f"{package_id}-{arch}.zip"
+            arch_archive = base_dir / f"{package_id}-{version}-{arch}.zip"
             build_archive(
                 manifest_path.parent,
                 manifest,
@@ -182,6 +191,31 @@ def main():
             distribution_architectures[arch] = str(arch_archive.relative_to(ROOT))
 
         metadata_path = PACKAGES / f"{package_id}.json"
+        current_metadata = load(ROOT / current_path) if current_path else None
+        versions = dict(current_metadata.get("versions", {})) if current_metadata else {}
+        if current_metadata and current_version and current_version not in versions:
+            versions[current_version] = {
+                "release": current_metadata.get("release", "stable"),
+                "distribution": current_metadata.get("distribution", {}),
+            }
+
+        version_distributions = {
+            "path": str(archive_path.relative_to(ROOT)),
+            "architectures": distribution_architectures,
+            "checksums": {
+                "sha256": sha256_file(archive_path),
+            },
+        }
+        for arch, arch_path in distribution_architectures.items():
+            artifact = ROOT / arch_path
+            if artifact.is_file():
+                version_distributions.setdefault("architecture_checksums", {})[arch] = sha256_file(artifact)
+
+        versions[manifest["version"]] = {
+            "release": manifest.get("release", "stable"),
+            "distribution": version_distributions,
+        }
+
         metadata = {
             "id": package_id,
             "name": manifest["name"],
@@ -202,7 +236,11 @@ def main():
                 "architectures": distribution_architectures,
                 "dependencies": manifest.get("dependencies", []),
                 "description": manifest["description"],
+                "checksums": {
+                    "sha256": sha256_file(archive_path),
+                },
             },
+            "versions": versions,
         }
         if manifest["author"].get("username") or os.getenv("GITHUB_ACTOR"):
             metadata["author_username"] = manifest["author"].get("username") or os.getenv("GITHUB_ACTOR")
