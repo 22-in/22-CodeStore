@@ -72,12 +72,16 @@ def next_version(current: str | None, requested: str | None) -> str:
     return f"{major}.{minor}.{patch + 1}"
 
 
-def build_archive(contribution: Path, manifest: dict, destination: Path):
+def build_archive(contribution: Path, manifest: dict, destination: Path, artifact_file: Path | None = None):
     author = manifest["author"]["name"]
     license_name = str(manifest["license"]).strip()
     with tempfile.TemporaryDirectory() as tmp:
         stage = Path(tmp) / manifest["id"]
         shutil.copytree(contribution, stage, dirs_exist_ok=True)
+        if artifact_file:
+            artifact_stage = stage / "artifact"
+            artifact_stage.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(artifact_file, artifact_stage / artifact_file.name)
         if license_name.upper() == "MIT" and not (stage / "LICENSE").exists():
             (stage / "LICENSE").write_text(
                 mit_license(author, str(datetime.now(timezone.utc).year)),
@@ -133,13 +137,17 @@ def main():
         if not architectures or any(a not in ARCH for a in architectures):
             raise ValueError(f"{manifest_path}: invalid architectures")
 
-        # The first automated publisher supports universal/source archives.
-        # Native per-architecture artifact publishing remains a deliberate manual path.
+        architecture_artifacts = manifest.get("architecture_artifacts", {})
         if any(a not in {"any", "source"} for a in architectures):
-            raise ValueError(
-                f"{manifest_path}: native architecture publishing requires "
-                "architecture-specific artifacts and is not yet handled automatically"
-            )
+            missing = [a for a in architectures if a not in {"any", "source"} and a not in architecture_artifacts]
+            if missing:
+                raise ValueError(f"{manifest_path}: missing architecture_artifacts for {missing}")
+            for arch in architectures:
+                if arch in {"any", "source"}:
+                    continue
+                artifact = manifest_path.parent / architecture_artifacts[arch]
+                if not artifact.is_file():
+                    raise ValueError(f"{manifest_path}: architecture artifact not found: {artifact}")
 
         current_path = index["packages"].get(package_id)
         current_version = None
@@ -155,11 +163,23 @@ def main():
         manifest = dict(manifest)
         manifest["version"] = version
         author = manifest["author"]["name"]
-        archive_path = (
-            ROOT / ("libraries" if manifest["type"] == "library" else "scripts")
-            / manifest["language"] / f"{package_id}.zip"
-        )
+        base_dir = ROOT / ("libraries" if manifest["type"] == "library" else "scripts") / manifest["language"]
+        archive_path = base_dir / f"{package_id}.zip"
         build_archive(manifest_path.parent, manifest, archive_path)
+
+        distribution_architectures = {}
+        for arch in architectures:
+            if arch in {"any", "source"}:
+                distribution_architectures[arch] = str(archive_path.relative_to(ROOT))
+                continue
+            arch_archive = base_dir / f"{package_id}-{arch}.zip"
+            build_archive(
+                manifest_path.parent,
+                manifest,
+                arch_archive,
+                manifest_path.parent / architecture_artifacts[arch],
+            )
+            distribution_architectures[arch] = str(arch_archive.relative_to(ROOT))
 
         metadata_path = PACKAGES / f"{package_id}.json"
         metadata = {
@@ -179,7 +199,7 @@ def main():
             "distribution": {
                 "type": "archive",
                 "path": str(archive_path.relative_to(ROOT)),
-                "architectures": {a: str(archive_path.relative_to(ROOT)) for a in architectures},
+                "architectures": distribution_architectures,
                 "dependencies": manifest.get("dependencies", []),
                 "description": manifest["description"],
             },
