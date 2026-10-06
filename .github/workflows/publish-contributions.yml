@@ -1,0 +1,40 @@
+name: Publish Approved 22 Store Contributions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "contributions/**"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    # Publication happens only after changes reach main.
+    # PRs are validated by validate-store.yml first.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Publish contributions
+        run: python tools/publish_contributions.py
+
+      - name: Commit generated Store files
+        run: |
+          if git diff --quiet; then
+            echo "No publication changes."
+            exit 0
+          fi
+          git config user.name "22 Store Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add libraries scripts registry
+          git commit -m "Publish approved Store contributions"
+          git push
