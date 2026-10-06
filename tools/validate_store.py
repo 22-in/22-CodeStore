@@ -54,6 +54,15 @@ def validate_manifest(path: Path, errors, registry_ids, aliases):
         errors.append(f"{path}: architectures must be a non-empty list")
     elif any(a not in ARCHITECTURES for a in data["architectures"]):
         errors.append(f"{path}: unsupported architecture value")
+    elif any(a not in {"any", "source"} for a in data["architectures"]):
+        artifacts = data.get("architecture_artifacts", {})
+        for arch in data["architectures"]:
+            if arch in {"any", "source"}:
+                continue
+            if arch not in artifacts:
+                errors.append(f"{path}: architecture_artifacts missing {arch}")
+            elif not (path.parent / artifacts[arch]).is_file():
+                errors.append(f"{path}: architecture artifact missing for {arch}: {artifacts[arch]}")
     if not isinstance(data["author"], dict) or not data["author"].get("name"):
         errors.append(f"{path}: author.name is required")
 
