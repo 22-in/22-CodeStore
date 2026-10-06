@@ -12,15 +12,21 @@
   "contribution_manifest_optional_fields": ["version", "aliases", "release", "architecture_artifacts"],
   "releases": ["stable", "beta", "experimental", "deprecated"],
   "architecture_values": ["any", "source", "armv7", "arm64", "x86", "x86_64"],
+  "optional_package_fields": ["aliases", "author_username", "versions"],
+  "distribution_security_fields": ["checksums"],
   "rules": [
     "Binary/native resources use architecture-specific artifacts; pure-source or architecture-independent packages may use any/source.",
     "A package ID is the stable machine-readable identifier used by registry clients.",
     "Package names are human-facing and may differ from package IDs.",
     "Clients should resolve package metadata through registry/index.json instead of hardcoding artifact URLs.",
     "A package version belongs to one stable package ID; different package IDs have independent version histories.",
+    "Published versions are retained under versioned artifact paths so clients can install an exact version.",
+    "Clients should treat an explicit package@version request as an exact version request and verify that version's distribution checksum before installation.",
+    "An unpinned package request may resolve to the current package version.",
     "Aliases must resolve to exactly one package ID and must not collide with package IDs or other aliases.",
     "Contributor manifests are intake metadata; published registry metadata is generated or maintained by 22.",
     "The published author field preserves the original author name; an optional author_username can preserve the submitting account identity.",
-    "Generated publication artifacts must preserve applicable third-party license and attribution files."
+    "Generated publication artifacts must preserve applicable third-party license and attribution files.",
+    "SHA-256 checksums protect downloaded artifacts against accidental corruption or unexpected content changes; signature-based trust can be added later."
   ]
 }
