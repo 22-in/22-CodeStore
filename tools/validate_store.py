@@ -150,12 +150,12 @@ def main():
             errors.append(f"{path}: invalid architecture")
         source = ROOT / data["source"]
         if not source.exists():
-            errors.append(f"{path}: source does not exist: {data["source"]}")
+            errors.append(f"{path}: source does not exist: {data['source']}")
         distribution = data["distribution"]
         if "path" not in distribution:
             errors.append(f"{path}: distribution.path is required")
         elif not (ROOT / distribution["path"]).exists():
-            errors.append(f"{path}: distribution.path does not exist: {distribution["path"]}")
+            errors.append(f"{path}: distribution.path does not exist: {distribution['path']}")
 
     for manifest in sorted(CONTRIBUTIONS.glob("*/22-manifest.json")):
         validate_manifest(manifest, errors, registry_ids, aliases)
