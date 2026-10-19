@@ -1,4 +1,4 @@
-# 22 Store Integration
+# 22 Code Store Integration
 
 This is the stable machine-readable flow for applications such as QuickCode.
 
@@ -105,7 +105,7 @@ Installing My Library 1.0.0
 Author: Example Author
 License: MIT
 Maintainer: 22
-Source: 22 Store
+Source: 22 Code Store
 ```
 
 This keeps the UI/terminal layer independent from source-code formatting.
@@ -123,7 +123,7 @@ Dependencies are declared in the manifest as package ID + version constraint obj
 ]
 ```
 
-The `id` must refer to a 22 Store package ID. A dependency version is a constraint, so clients may support exact versions or ranges according to their package-manager implementation.
+The `id` must refer to a 22 Code Store package ID. A dependency version is a constraint, so clients may support exact versions or ranges according to their package-manager implementation.
 
 The Store validates the dependency declaration format but does not currently resolve dependencies or handle conflicts. Clients/package managers are responsible for selecting compatible versions and deciding how to handle conflicts.
 

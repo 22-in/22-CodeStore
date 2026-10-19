@@ -1,4 +1,4 @@
-# 22 Store Contributions
+# 22 Code Store Contributions
 
 This directory is the intake area for new community resources.
 
