@@ -1,4 +1,4 @@
-name: Publish Approved 22 Store Contributions
+name: Publish Approved 22 Code Store Contributions
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
             echo "No publication changes."
             exit 0
           fi
-          git config user.name "22 Store Bot"
+          git config user.name "22 Code Store Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add libraries scripts registry
           git commit -m "Publish approved Store contributions"
