@@ -1,14 +1,14 @@
-# 22 Store 🚀
+# 22 Code Store 🚀
 
 ### Open-Source Library & Script Store
 
-**22 Store** is a free, community-driven collection of reusable libraries and ready-to-use scripts for developers.
+**22 Code Store** is a free, community-driven collection of reusable libraries and ready-to-use scripts for developers.
 
 It is built to make code easier to **find, download, reuse, and share** across different projects and languages.
 
 ---
 
-## 📦 What's in 22 Store?
+## 📦 What's in 22 Code Store?
 
 ### Libraries
 
@@ -39,7 +39,7 @@ Scripts are suitable for:
 
 ## 💻 QuickCode
 
-22 Store is integrated with **QuickCode**, where Store resources can be accessed through QuickCode's own command system.
+22 Code Store is integrated with **QuickCode**, where Store resources can be accessed through QuickCode's own command system.
 
 ### Install a Library
 
@@ -91,13 +91,13 @@ QuickCode downloads the requested script resource into the active project accord
 
 > **Important:** `22 install` and `22 get` are QuickCode commands. They are not commands provided by GitHub or by this repository itself.
 >
-> Other developers and applications can use the 22 Store registry with their own commands, interfaces, installers, or workflows.
+> Other developers and applications can use the 22 Code Store registry with their own commands, interfaces, installers, or workflows.
 
 ---
 
 ## 🌍 Multi-Language Support
 
-22 Store is designed to support resources written in different languages.
+22 Code Store is designed to support resources written in different languages.
 
 Current structure:
 
@@ -274,7 +274,7 @@ Malicious or unsafe resources can be quarantined or unpublished without removing
 
 ## 📜 Licensing
 
-The 22 Store repository is licensed under the **MIT License**.
+The 22 Code Store repository is licensed under the **MIT License**.
 
 For individual resources, contributors must have the right to submit the code under the license declared for that resource.
 
@@ -282,14 +282,14 @@ If a contributor chooses MIT for their own eligible code, the publication workfl
 
 Third-party code must retain its applicable copyright notices, attribution, and license requirements.
 
-Hosting code in 22 Store does not automatically change its original license.
+Hosting code in 22 Code Store does not automatically change its original license.
 
 ---
 
 ## 📁 Repository Structure
 
 ```text
-22-Store/
+22-CodeStore/
 ├── contributions/
 ├── libraries/
 ├── scripts/
@@ -315,10 +315,10 @@ Whether you are:
 - **Integrating** the registry into your own application
 - **Contributing** a library or script
 
-22 Store is designed to keep the process simple and machine-readable.
+22 Code Store is designed to keep the process simple and machine-readable.
 
 ---
 
 ### Happy Coding 💻
 
-**22 Store — Harvesting Potential Everywhere.**
+**22 Code Store — Harvesting Potential Everywhere.**
