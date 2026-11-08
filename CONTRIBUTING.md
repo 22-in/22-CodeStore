@@ -2,18 +2,21 @@
 
 22 Code Store accepts reusable libraries and ready-to-use scripts from the community.
 
-## Contribution flow
+## Choose how to contribute
 
-1. Prepare and test your resource.
-2. Create a contribution folder under `contributions/`.
-3. Add the resource and a `22-manifest.json`.
-4. Add documentation required for the resource type.
-5. Open a pull request.
-6. Automated checks validate structure and metadata.
-7. 22 reviews the contribution, including security, licensing, and functionality.
-8. Approved contributions are published into the Store registry.
+**Option A — Upload one ZIP (recommended for new contributors)**
 
-Contributors submit the resource and basic metadata. Do not manually edit generated registry files.
+1. Prepare a ZIP containing your package and its `22-manifest.json`.
+2. The manifest must be at the ZIP root or inside one top-level package folder.
+3. For a library, include `README.md` with installation, usage, and a working example.
+4. Upload the ZIP to `contributions/inbox/` in a pull request. Use a clear filename such as `my-library.zip`.
+5. Automated checks validate the archive. A maintainer reviews it before merge and publication.
+
+The ZIP must be no larger than 50 MiB, expand to no more than 150 MiB, and contain no more than 1,000 entries. ZIP paths, duplicate entries, symlinks, encrypted entries, and suspicious compression ratios are rejected. Submitted code is never executed during validation.
+
+**Option B — Contribute an extracted folder**
+
+Create `contributions/<package-id>/`, put `22-manifest.json` and resource files inside it, then open a pull request as described below.
 
 ## Manifest
 
@@ -26,74 +29,30 @@ Example:
   "type": "library",
   "language": "python",
   "license": "MIT",
-  "author": {
-    "name": "Your Name"
-  },
+  "author": { "name": "Your Name" },
   "description": "A short description.",
-  "aliases": ["my-lib"],
-  "dependencies": [
-    {
-      "id": "requests",
-      "version": ">=2.30.0"
-    }
-  ],
+  "aliases": [],
+  "dependencies": [],
   "architectures": ["any"]
 }
 ```
 
 ### Field rules
 
-- `id`: stable package identifier. It must be unique in the Store.
+- `id`: unique stable package identifier; use lowercase letters, numbers, dots, underscores or hyphens.
 - `name`: human-facing resource name.
 - `type`: `library` or `script`.
-- `language`: supported language such as `python`, `java`, `cpp`, or `web`.
-- `version`: optional. A new package defaults to `1.0.0`. An update without an explicit version receives a patch bump. Contributors can explicitly choose a higher version when a minor/major release is appropriate.
-- `license`: the license the contributor has the right to grant. Use `NO-LICENSE` when no license is granted; this does not mean the code is free to use.
-- `author`: original author name. `username` is optional; the publishing workflow can preserve the GitHub account that submitted the contribution.
-- `description`: short explanation of what the resource does.
-- `aliases`: optional alternate names. They must not conflict with an existing package or alias.
-- `dependencies`: optional list of dependency objects. Each dependency must contain a package `id` and a `version` constraint, such as `>=2.30.0`, `^1.4.0`, or `1.2.3`. Dependency IDs refer to 22 Code Store package IDs, not display names or aliases.
-- `architectures`: use `any` for architecture-independent resources, `source` for source-only distribution where appropriate, and actual architecture values for native/compiled resources. For native resources, add `architecture_artifacts` mapping each architecture to the contributor-supplied binary/artifact.
+- `language`: `python`, `java`, `cpp`, or `web`.
+- `version`: optional; a new package defaults to `1.0.0`. Updates without an explicit version receive a patch bump.
+- `license`: license you have the right to grant. Use `NO-LICENSE` when no license is granted; this does not mean the code is free to use.
+- `author.name`: original author name. `author.username` is optional.
+- `description`: short explanation of the resource.
+- `aliases`: optional alternate names; they must not conflict with an existing package or alias.
+- `dependencies`: optional list of objects with Store package `id` and `version` constraint.
+- `architectures`: use `any` for architecture-independent resources, `source` for source-only resources, or actual supported architecture values. Native resources require `architecture_artifacts` mappings.
 
-The Store defines dependency declarations, but does not currently perform dependency resolution or conflict resolution. Clients/package managers are responsible for resolving the declared constraints.
+## Review and publication
 
-## Library requirements
+Automated validation checks structure and metadata; it does not prove code is safe or functional. A maintainer reviews functionality, security, licensing, attribution, and compatibility before merging. Only the trusted workflow on `main` stages ZIPs and publishes generated archives and registry metadata.
 
-A library must include:
-
-- library/package files
-- `README.md` with installation, usage, and at least one working example
-- `22-manifest.json`
-- declared license information
-- third-party copyright/license notices where applicable
-- dependency information when applicable
-
-Complex libraries should include automated tests.
-
-## Script requirements
-
-A script must include:
-
-- runnable/source files
-- `22-manifest.json`
-- enough documentation to explain how to run it and what it does
-- dependency information when applicable
-- declared license information
-
-A source header may contain concise attribution, but 22 Code Store will not rewrite source code merely to add metadata. Source changes are only made when an actual fix or approved modification is required.
-
-## License and attribution
-
-22 Code Store preserves original authorship and applicable third-party licenses.
-
-If 22 fixes or modifies a contribution, the published metadata may record both the original author and 22 as maintainer/modifier. This does not transfer original authorship to 22.
-
-22 Code Store must not silently change a contributor's license choice.
-
-## Review and rejection
-
-Automated checks are not final approval. A maintainer reviews functionality, security, licensing, documentation, and compatibility.
-
-Small, obvious fixes may be made during review when practical. Contributions with major errors, unresolved dependency problems, broken functionality, or unclear licensing may be rejected with a reason and can be resubmitted after correction.
-
-Malicious or clearly abusive submissions may be quarantined and can lead to contributor restrictions under the Store's security policy.
+Do not manually edit generated registry files.

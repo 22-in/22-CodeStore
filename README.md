@@ -225,27 +225,27 @@ Aliases provide alternate names but must resolve to exactly one package ID.
 
 ## 🤝 Contributing
 
-New resources enter through the `contributions/` directory rather than being placed directly into the published Store directories.
+New resources enter through `contributions/` rather than being placed directly into published Store directories. Contributors can submit either an extracted package folder or a single ZIP archive in `contributions/inbox/`.
 
 ```text
-Prepare resource
+Prepare package + 22-manifest.json
       ↓
-22-manifest.json
+Upload one ZIP or package folder
       ↓
 Pull request
       ↓
-Automated validation
+Automated structure + archive validation
       ↓
 Human + security + license review
       ↓
 Merge
       ↓
-Trusted publication workflow
+Trusted ZIP staging + publication
       ↓
 Archive + metadata + registry
 ```
 
-See `CONTRIBUTING.md` for the exact contributor requirements.
+ZIP submissions are validated without executing submitted code. See `CONTRIBUTING.md` for the exact contributor requirements.
 
 The contributor supplies the resource and basic metadata. **22 generates/maintains the published registry metadata**, so contributors do not have to manually maintain the backend registry.
 
