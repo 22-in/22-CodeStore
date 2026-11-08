@@ -12,8 +12,7 @@ permissions:
 
 jobs:
   publish:
-    # Publication happens only after changes reach main.
-    # PRs are validated by validate-store.yml first.
+    # This privileged workflow runs only after a reviewed contribution reaches main.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,6 +22,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+
+      - name: Safely stage approved ZIP submissions
+        run: python tools/validate_contribution_zips.py --extract
+
+      - name: Validate Store registry and staged contributions
+        run: python tools/validate_store.py
 
       - name: Publish contributions
         run: python tools/publish_contributions.py
