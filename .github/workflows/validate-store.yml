@@ -33,5 +33,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Validate Store
+      - name: Validate ZIP submissions
+        run: python tools/validate_contribution_zips.py
+
+      - name: Validate Store registry and folder contributions
         run: python tools/validate_store.py
